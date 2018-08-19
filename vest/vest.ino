@@ -11,9 +11,11 @@ const int MAX_HEALTH = 25;
 int health = MAX_HEALTH;
 
 const int LASER_TAG_RAW_SAMPLES = 18;
+const int PISTOL_RAW_SAMPLES = 2;
 const int DELAY_BEFORE_DEATH_STROBE = 2500;
 const int DEATH_STROBE_BLINK = 600;
 const int BLINK_HIT_TIME = 1000;
+const int PISTOL_DMG_MULTIPLIER = 2;
 
 const int IR_RECIEVER = 2;
 const int RESET_BUTTON = 12;
@@ -124,6 +126,8 @@ void loop() {
     if (recvGlobal.decodeLength == LASER_TAG_RAW_SAMPLES) {
       health--;
       updateLEDs();
+    } else if (recvGlobal.decodeLength == PISTOL_RAW_SAMPLES) {
+      health -= PISTOL_DMG_MULTIPLIER;
     }
     receiver.enableIRIn();
   }
