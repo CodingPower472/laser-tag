@@ -119,7 +119,7 @@ void loop() {
     if (recvGlobal.decodeLength == LASER_TAG_RAW_SAMPLES || recvGlobal.decodeLength == PISTOL_RAW_SAMPLES) {
       health--;
       updateLEDs();
-      BLINK_LED.Blink(BLINK_HIT_TIME, BLINK_HITT_TIME);
+      BLINK_LED.Blink(BLINK_HIT_TIME, BLINK_HIT_TIME);
     }
     if (recvGlobal.decodeLength == PISTOL_RAW_SAMPLES) {
       health -= PISTOL_DMG_MULTIPLIER + 1;
