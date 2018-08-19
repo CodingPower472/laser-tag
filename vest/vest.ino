@@ -128,6 +128,7 @@ void loop() {
       updateLEDs();
     } else if (recvGlobal.decodeLength == PISTOL_RAW_SAMPLES) {
       health -= PISTOL_DMG_MULTIPLIER;
+      updateLEDs();
     }
     receiver.enableIRIn();
   }
