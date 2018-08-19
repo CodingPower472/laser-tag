@@ -21,10 +21,12 @@ const int IR_RECIEVER = 2;
 const int RESET_BUTTON = 12;
 
 const int LED_PINS[] = { 3, 5, 6, 9, 11 };
+const int BLINK_LED_PIN = 4;
 const int NUM_HEALTH_BARS = sizeof(LED_PINS) / sizeof(int);
 const int LED_BLINKS[NUM_HEALTH_BARS] = { 4000, 4000, 4000, 3500, 3000 };
 
 std::vector<JLed> HEALTH_BAR_LEDS;
+JLed BLINK_LED = JLed(BLINK_LED_PIN).Off();
 
 IRrecvPCI receiver(IR_RECIEVER);
 IRdecode decoder;
@@ -107,15 +109,6 @@ void loop() {
   for (int i = 0; i < NUM_HEALTH_BARS; i++) {
     HEALTH_BAR_LEDS[i].Update();
   }
-  // until i get the IR sensor, read string from serial to activate
-  if (Serial.readString() != "") {
-    Serial.println("Hit!");
-    health--;
-    updateLEDs();
-    for (int i = 0; i < NUM_HEALTH_BARS; i++) {
-      HEALTH_BAR_LEDS[i].Blink(BLINK_HIT_TIME, BLINK_HIT_TIME);
-    }
-  }
   if (digitalRead(RESET_BUTTON) == HIGH) {
     Serial.println("Resetting");
     reset();
@@ -123,11 +116,13 @@ void loop() {
   if (receiver.getResults()) {
     Serial.print("Decode length: ");
     Serial.println(recvGlobal.decodeLength);
-    if (recvGlobal.decodeLength == LASER_TAG_RAW_SAMPLES) {
+    if (recvGlobal.decodeLength == LASER_TAG_RAW_SAMPLES || recvGlobal.decodeLength == PISTOL_RAW_SAMPLES) {
       health--;
       updateLEDs();
-    } else if (recvGlobal.decodeLength == PISTOL_RAW_SAMPLES) {
-      health -= PISTOL_DMG_MULTIPLIER;
+      BLINK_LED.Blink(BLINK_HIT_TIME, BLINK_HITT_TIME);
+    }
+    if (recvGlobal.decodeLength == PISTOL_RAW_SAMPLES) {
+      health -= PISTOL_DMG_MULTIPLIER + 1;
       updateLEDs();
     }
     receiver.enableIRIn();
