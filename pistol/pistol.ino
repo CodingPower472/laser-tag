@@ -1,31 +1,34 @@
+
 #include <IRremote.h>
 
-IRsend irsend;
+IRsend irSender;
 
-int trigger = 3;
-int reload = 0;
-int maxAmmo = 10;
+const int MAX_FIRING_SPEED = 120; // in shots per minute
+const int MAX_AMMO = 10;
+const unsigned int IR_SIGNAL[] = {1000000};
+const int TRIGGER_PIN = 3;
+const int RELOAD_PIN = 0;
+
 int ammo = 0;
 
 void setup() {
-  pinMode(trigger, INPUT);
-  pinMode(reload, INPUT);
+  pinMode(TRIGGER_PIN, INPUT);
+  pinMode(RELOAD_PIN, INPUT);
 }
 
 
 void loop() {
-  int trigger_state = digitalRead(trigger);
-  if (trigger_state == 1) {\
+  int triggerState = digitalRead(TRIGGER_PIN);
+  if (triggerState == HIGH) {
     if (ammo >= 1) {
-      ammo = ammo - 1;
+      ammo--;
       
-      unsigned int irSignal[] = {1000000};
-      irsend.sendRaw(irSignal, sizeof(irSignal), 38);
-      delay(500);
+      irSender.sendRaw(IR_SIGNAL, sizeof(IR_SIGNAL), 38);
+      delay(60 / MAX_FIRING_SPEED * 1000);
     }
   }
-  int reload_state = digitalRead(reload);
-  if (reload_state == 1) {
-    ammo = maxAmmo;
+  int reloadState = digitalRead(RELOAD_PIN);
+  if (reloadState == HIGH) {
+    ammo = MAX_AMMO;
   }
 }
