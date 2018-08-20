@@ -23,8 +23,8 @@ bool isBuzzAssigned = false;
 const int PISTOL_DMG_MULTIPLIER = 2;
 
 const int LED_PINS[] = { 11, 9, 6, 5, 3 };
-const int BLINK_LED_PIN = 3;
-const int BUZZER_PIN = 13;
+const int BLINK_LED_PIN = 4;
+const int BUZZER_PIN = 8;
 const int IR_RECIEVER = 2;
 const int RESET_BUTTON = 12;
 const int NUM_HEALTH_BARS = sizeof(LED_PINS) / sizeof(int);
