@@ -123,7 +123,7 @@ void loop() {
     isBuzzAssigned = false;
     digitalWrite(BUZZER_PIN, LOW);
   }
-  if (receiver.getResults()) {
+  if (receiver.getResults() || Serial.readString() != "") {
     Serial.print("Decode length: ");
     Serial.println(recvGlobal.decodeLength);
     if (recvGlobal.decodeLength == LASER_TAG_RAW_SAMPLES || recvGlobal.decodeLength == PISTOL_RAW_SAMPLES) {
