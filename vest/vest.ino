@@ -16,18 +16,19 @@ const int DELAY_BEFORE_DEATH_STROBE = 2500;
 const int DEATH_STROBE_BLINK = 600;
 const int BLINK_HIT_TIME = 1000;
 const int BUZZ_HIT_TIME = 1000;
+const int BUZZ_DIE_TIME = 4000;
 unsigned long whenBuzzAssigned = 0;
 bool isBuzzAssigned = false;
 
 const int PISTOL_DMG_MULTIPLIER = 2;
 
-const int LED_PINS[] = { 11, 9, 6, 5, /*3*/ };
+const int LED_PINS[] = { 11, 9, 6, 5, 3 };
 const int BLINK_LED_PIN = 3;
 const int BUZZER_PIN = 13;
 const int IR_RECIEVER = 2;
 const int RESET_BUTTON = 12;
 const int NUM_HEALTH_BARS = sizeof(LED_PINS) / sizeof(int);
-const int LED_BLINKS[NUM_HEALTH_BARS] = { 4000, 4000, 4000, 3500, /*3000*/ };
+const int LED_BLINKS[NUM_HEALTH_BARS] = { 4000, 4000, 4000, 3500, 3000 };
 
 std::vector<JLed> HEALTH_BAR_LEDS;
 JLed BLINK_LED = JLed(BLINK_LED_PIN).Off();
@@ -117,7 +118,8 @@ void loop() {
     Serial.println("Resetting");
     reset();
   }
-  if (isBuzzAssigned && millis() - whenBuzzAssigned >= BUZZ_HIT_TIME) {
+  int buzzTime = (health > 0 ? BUZZ_HIT_TIME : BUZZ_DIE_TIME);
+  if (isBuzzAssigned && millis() - whenBuzzAssigned >= buzzTime) {
     isBuzzAssigned = false;
     digitalWrite(BUZZER_PIN, LOW);
   }
