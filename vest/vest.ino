@@ -15,15 +15,19 @@ const int PISTOL_RAW_SAMPLES = 2;
 const int DELAY_BEFORE_DEATH_STROBE = 2500;
 const int DEATH_STROBE_BLINK = 600;
 const int BLINK_HIT_TIME = 1000;
+const int BUZZ_HIT_TIME = 1000;
+unsigned long whenBuzzAssigned = 0;
+bool isBuzzAssigned = false;
+
 const int PISTOL_DMG_MULTIPLIER = 2;
 
+const int LED_PINS[] = { 11, 9, 6, 5, /*3*/ };
+const int BLINK_LED_PIN = 3;
+const int BUZZER_PIN = 13;
 const int IR_RECIEVER = 2;
 const int RESET_BUTTON = 12;
-
-const int LED_PINS[] = { 3, 5, 6, 9, 11 };
-const int BLINK_LED_PIN = 4;
 const int NUM_HEALTH_BARS = sizeof(LED_PINS) / sizeof(int);
-const int LED_BLINKS[NUM_HEALTH_BARS] = { 4000, 4000, 4000, 3500, 3000 };
+const int LED_BLINKS[NUM_HEALTH_BARS] = { 4000, 4000, 4000, 3500, /*3000*/ };
 
 std::vector<JLed> HEALTH_BAR_LEDS;
 JLed BLINK_LED = JLed(BLINK_LED_PIN).Off();
@@ -41,7 +45,6 @@ void reset() {
 
 void showDeathStrobe() {
   for (int i = 0; i < NUM_HEALTH_BARS; i++) {
-    //HEALTH_BAR_LEDS[i].Blink(DEATH_STROBE_BLINK, DEATH_STROBE_BLINK).Forever();
     HEALTH_BAR_LEDS[i].Breathe(3000).DelayAfter(1000).Forever();
   }
 }
@@ -108,10 +111,15 @@ void loop() {
   // put your main code here, to run repeatedly:
   for (int i = 0; i < NUM_HEALTH_BARS; i++) {
     HEALTH_BAR_LEDS[i].Update();
+    BLINK_LED.Update();
   }
   if (digitalRead(RESET_BUTTON) == HIGH) {
     Serial.println("Resetting");
     reset();
+  }
+  if (isBuzzAssigned && millis() - whenBuzzAssigned >= BUZZ_HIT_TIME) {
+    isBuzzAssigned = false;
+    digitalWrite(BUZZER_PIN, LOW);
   }
   if (receiver.getResults()) {
     Serial.print("Decode length: ");
@@ -120,6 +128,9 @@ void loop() {
       health--;
       updateLEDs();
       BLINK_LED.Blink(BLINK_HIT_TIME, BLINK_HIT_TIME);
+      isBuzzAssigned = true;
+      whenBuzzAssigned = millis();
+      digitalWrite(BUZZER_PIN, HIGH);
     }
     if (recvGlobal.decodeLength == PISTOL_RAW_SAMPLES) {
       health -= PISTOL_DMG_MULTIPLIER + 1;
